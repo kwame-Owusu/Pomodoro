@@ -7,4 +7,5 @@ it was done in vanilla tkinter, so it looks a little funny and ugly, but then I 
 and made it better looking with the help of customtkinter, which is a library that is built on top of tkinter to give modern UI to GUI applications.
 ![image](https://github.com/kwame-Owusu/Pomodoro/assets/98961379/be74f020-d707-4cc1-aec2-3f47b58ff2a2)
 
-
+the playlist and music can be anything the user desires, just download mp3 version of desired playlist and change the name in the "study music" section in my code.
+as for the break time, its a good sound that signals the break after each session.
