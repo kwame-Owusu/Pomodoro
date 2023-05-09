@@ -1,4 +1,4 @@
-# Pomodoro
+# Pomodoro GUI app
 a GUI app that uses the pomodoro principle to help study, it looks cute as well.
 I have also added playlist functionality which can make the user listen to background music while studying.
 the first prototype looked like this:
