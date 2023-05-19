@@ -3,7 +3,12 @@ from tkinter import *
 import pygame
 import random
 import math
+
+
 app = customtkinter.CTk()
+pygame.mixer.init() 
+
+
 # ---------------------------- CONSTANTS ------------------------------- #
 PINK = "#F4BFBF"
 RED = "#E97777"
@@ -30,6 +35,7 @@ def reset_timer():
 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
 
+break_music = ("break_time.mp3")
 def start_timer():
     global reps
     reps += 1  
@@ -38,19 +44,27 @@ def start_timer():
     long_break_sec = LONG_BREAK_MIN * 60
 
 
+
+
 # red for long break and yellow for a short break
     if reps % 8 == 0:
         countdown(long_break_sec)
         timer_label.config(text="Break", fg=RED)
+        pygame.mixer.music.load(break_music)
+        pygame.mixer.music.play()
+        pygame.mixer.music.set_volume(0.09)
     elif reps % 2 == 0:
         countdown(short_break_sec)
         timer_label.config(text="Break", fg=YELLOW)
+        pygame.mixer.music.load(break_music)
+        pygame.mixer.music.play()
+        pygame.mixer.music.set_volume(0.09)
     else:
         countdown(work_sec)
         timer_label.config(text="Work", fg=PINK)
 
 # ---------------------------- STUDY MUSIC------------------------------- #
-pygame.mixer.init() 
+
 
 
 PLAYLISTS= ["playlist_1.mp3", "playlist_2.mp3", "playlist_3.mp3", "playlist_4.mp3" , "playlist_5.mp3"]
@@ -83,29 +97,34 @@ def Resume():
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
-break_music = ("break_time.mp3")
+
 def countdown(count):
 #    for couting the min, use math.floor to round down instead of up
-   count_min = math.floor(count / 60)
+    count_min = math.floor(count / 60)
 #    give the remainder, which becomes the seconds.
-   count_sec = count % 60
+    count_sec = count % 60
 #    for the 0 to appear in front of number when it hits single digits and in the beginning
-   if count_sec  < 10:
-       count_sec = f"0{count_sec}"
-   
-   
-   canvas.itemconfig(timer_text, text=f"{count_min}:{count_sec}")
-   if count > 0:
+    if count_sec < 10:
+        count_sec = f"0{count_sec}"
+
+    canvas.itemconfig(timer_text, text=f"{count_min}:{count_sec}")
+    
+    if count > 0:
         global timer
-        timer = app.after(1000, countdown, count - 1 )
-   else:
-      start_timer()
-    #   everytime a work session is done a check mark will appear
-      if reps % 2 == 0:
-          checkmark_label.config(text="✔")    
-          pygame.mixer.music.load(break_music)
-          pygame.mixer.music.play()
-          pygame.mixer.music.set_volume(0.09)
+        timer = app.after(1000, countdown, count - 1)
+    
+    else:
+        start_timer()
+#   everytime a work session is done, a checkmark will appear
+        marks = ""
+        
+        work_sessions = math.floor(reps/2)
+        for _ in range(work_sessions):
+            marks += "✔"
+        checkmark_label.config(text=marks)
+
+          
+
 
 
 
@@ -126,10 +145,10 @@ canvas.create_image(100, 112, image=pomodoro_img)
 timer_text = canvas.create_text(100, 160, text="00:00", fill="white", font=(FONT_NAME, 20, "bold") )
 canvas.grid(column=2, row=1)
 
-#checkmark for completion of 1 session
-checkmark_label = Label(fg=PINK, bg= GREEN)
-checkmark_label.configure( font=(FONT_NAME, 10, "bold"), )
-checkmark_label.grid(column=2, row=4)
+#checkmark for completion of 1 work session
+checkmark_label = Label(fg=PINK,bg=GREEN)
+checkmark_label.configure(font=(FONT_NAME, 10, "bold"), )
+checkmark_label.grid(column=2, row=3)
 
 timer_label = Label()
 timer_label.config(text="Timer", font=("small fonts", 45, "bold"), fg=PINK, bg=GREEN, highlightthickness=0)
@@ -162,10 +181,6 @@ music_button.grid(column=2, row=5)
 pause_button = customtkinter.CTkButton(app,text="Resume",hover=True,font=("small fonts", 16, "bold",), bg_color=GREEN, fg_color=PINK,)
 pause_button.configure(width=30, height=30,hover_color=(YELLOW),command=Resume)
 pause_button.grid(column=3, row=5)
-
-
-
-
 
 
 
