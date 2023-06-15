@@ -11,7 +11,8 @@ the playlist and music can be anything the user desires, just download mp3 versi
 as for the break time, its a good sound that signals the break after each session.
 
 
-edit: final-version
+edit: final-version,
+
 after looking at the design of the app, i was not satisfied, so i went and restructured the code a little, to make it cleaner and also make the design look better and homogeneous.
 
 ![image](https://github.com/kwame-Owusu/Pomodoro/assets/98961379/fe73e331-0f8d-455f-b175-130954e85c06)
