@@ -1,76 +1,62 @@
-import customtkinter
+import customtkinter as ctk
 from tkinter import *
-import pygame
+from PIL import Image, ImageTk
 import random
 import math
+import pygame
+from settings import *
 
 
-app = customtkinter.CTk()
-pygame.mixer.init() 
 
 
-# ---------------------------- CONSTANTS ------------------------------- #
-PINK = "#F4BFBF"
-RED = "#E97777"
-GREEN = "#C7E9B0"
-YELLOW = "#f7f5dd"
-FONT_NAME = "Courier"
-# 45 mins because i like to work a little longer with pomodoro
-WORK_MIN = 45
-SHORT_BREAK_MIN = 5
-LONG_BREAK_MIN = 15
+
+# window setup
+pomodoro = ctk.CTk()
+pygame.mixer.init()
+pomodoro.iconbitmap("imgs/tomato_icon.ico")
+pomodoro.resizable(False, False)
+pomodoro.title("")
+pomodoro.config(padx=200, pady=224, bg=COLORS["green"])
+
+# timer variables
 reps = 0
 timer = None
 
-# ---------------------------- TIMER RESET ------------------------------- # 
-def reset_timer():
-    app.after_cancel(timer)
-    canvas.itemconfig(timer_text, text="00:00")
-    timer_label["text"] = "Timer"
-    checkmark_label["text"] = ""
-    global reps
-    reps = 0
-
-
-
-# ---------------------------- TIMER MECHANISM ------------------------------- # 
-
-break_music = ("break_time.mp3")
-def start_timer():
-    global reps
-    reps += 1  
-    work_sec = WORK_MIN * 60
-    short_break_sec = SHORT_BREAK_MIN * 60
-    long_break_sec = LONG_BREAK_MIN * 60
 
 
 
 
-# red for long break and yellow for a short break
-    if reps % 8 == 0:
-        countdown(long_break_sec)
-        timer_label.config(text="Break", fg=RED)
-        pygame.mixer.music.load(break_music)
-        pygame.mixer.music.play()
-        pygame.mixer.music.set_volume(0.09)
-    elif reps % 2 == 0:
-        countdown(short_break_sec)
-        timer_label.config(text="Break", fg=YELLOW)
-        pygame.mixer.music.load(break_music)
-        pygame.mixer.music.play()
-        pygame.mixer.music.set_volume(0.09)
-    else:
-        countdown(work_sec)
-        timer_label.config(text="Work", fg=PINK)
 
-# ---------------------------- STUDY MUSIC------------------------------- #
+pomodoro_img = PhotoImage(file="imgs/tomato.png")
+
+# create pomodoro img in the middle of window
+canvas = Canvas(width=200, height=224, bg=COLORS["green"], highlightthickness=0)
+canvas.create_image(100, 112, image=pomodoro_img)
+timer_text = canvas.create_text(100, 170, text="00:00", fill=WHITE, font=(FONT, SMALL_FONT_SIZE,))
+canvas.grid(column=2, row=1)
+
+# UI setup
+
+# labels
+timer_label = ctk.CTkLabel(pomodoro,text="Timer", font=(FONT, BIG_FONT_SIZE), text_color=COLORS["pink"]["fg"], bg_color=COLORS["green"])
+timer_label.grid(column=2, row=0)
+
+playlist_label = ctk.CTkLabel(pomodoro,text="Study  Playlists", font=(FONT, 40), text_color=COLORS["pink"]["fg"], bg_color=COLORS["green"])
+playlist_label.configure(pady=STYLING["gap"])
+playlist_label.grid(column=2, row=3)
+
+checkmark_label = ctk.CTkLabel(pomodoro,text="", font=(FONT, 19,), text_color=COLORS["pink"]["fg"], bg_color=COLORS["green"])
+checkmark_label.grid(column=2, row=2,)
+
+# ------- commands--- #
 
 
 
-PLAYLISTS= ["playlist_1.mp3", "playlist_2.mp3", "playlist_3.mp3", "playlist_4.mp3" , "playlist_5.mp3"]
+PLAYLISTS= ["music/playlist_1.mp3", "music/playlist_2.mp3", "music/playlist_3.mp3", "music/playlist_4.mp3" , "music/playlist_5.mp3", "music/playlist_6.mp3"]
 current_list = []
 
-# using pygame mixer because all other libraries were not working, although i do no know the reason
+
+# commands for the buttons
 
 def Play():
     global current_list
@@ -85,6 +71,8 @@ def Play():
     pygame.mixer.music.play()
     pygame.mixer.music.set_volume(0.04)
 
+
+
     
 
     
@@ -96,10 +84,54 @@ def Resume():
 
 
 
-# ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
+
+
+
+
+def reset_timer():
+    pomodoro.after_cancel(timer)
+    canvas.itemconfig(timer_text, text="00:00")
+    timer_label.configure(text="Timer")
+    checkmark_label.configure(text="")
+    global reps
+    reps = 0
+
+
+
+break_music = "music/break_time.mp3"
+def start_timer():
+   global reps
+   reps += 1
+   work_sec = WORK_MIN * 60
+   short_break_sec = SHORT_BREAK_MIN * 60
+   long_break_sec = LONG_BREAK_MIN * 60
+
+   if reps % 8 == 0:
+       countdown(long_break_sec)
+       timer_label.configure(text="Long Break", text_color=COLORS["red"])
+       pygame.mixer.music.load(break_music)
+       pygame.mixer.music.play()
+       pygame.mixer.music.set_volume(0.09)
+   
+   elif reps % 2 == 0:
+       countdown(short_break_sec)
+       timer_label.configure(text="Short Break", text_color=COLORS["yellow"])
+       pygame.mixer.music.load(break_music)
+       pygame.mixer.music.play()
+       pygame.mixer.music.set_volume(0.09)
+   
+   else:
+       countdown(work_sec)
+       timer_label.configure(text="Work", text_color=COLORS["pink"]["fg"])
+
+   
+    
+   
+
+
 
 def countdown(count):
-#    for couting the min, use math.floor to round down instead of up
+    #    for couting the min, use math.floor to round down instead of up
     count_min = math.floor(count / 60)
 #    give the remainder, which becomes the seconds.
     count_sec = count % 60
@@ -111,7 +143,7 @@ def countdown(count):
     
     if count > 0:
         global timer
-        timer = app.after(1000, countdown, count - 1)
+        timer = pomodoro.after(1000, countdown, count - 1)
     
     else:
         start_timer()
@@ -121,69 +153,77 @@ def countdown(count):
         work_sessions = math.floor(reps/2)
         for _ in range(work_sessions):
             marks += "✔"
-        checkmark_label.config(text=marks)
+        checkmark_label.configure(text=marks)
+    
 
-          
-
-
-
-
-# ---------------------------- UI SETUP ------------------------------- #
-customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
-
-
-        #  configure window
-app.title("Pomodoro")
-app.config(padx=200, pady=224, bg=GREEN,)
-        
-        # pomodoro image
-pomodoro_img = PhotoImage(file="tomato_2.png")
-        # canvas
-canvas = Canvas(width=200, height=223, bg=GREEN, highlightthickness=0,)
-canvas.create_image(100, 112, image=pomodoro_img)
-timer_text = canvas.create_text(100, 160, text="00:00", fill="white", font=(FONT_NAME, 20, "bold") )
-canvas.grid(column=2, row=1)
-
-#checkmark for completion of 1 work session
-checkmark_label = Label(fg=PINK,bg=GREEN)
-checkmark_label.configure(font=(FONT_NAME, 10, "bold"), )
-checkmark_label.grid(column=2, row=3)
-
-timer_label = Label()
-timer_label.config(text="Timer", font=("small fonts", 45, "bold"), fg=PINK, bg=GREEN, highlightthickness=0)
-timer_label.grid(column=2, row=0)
-
-
-start_button = customtkinter.CTkButton(app,text="start",hover=True,command=start_timer,font=("small fonts", 16, "bold",), bg_color=GREEN, fg_color=PINK,)
-start_button.configure(width=50, height=30,hover_color=(YELLOW), command=start_timer)
-start_button.grid(column=1, row=3)
-
-
-reset_button = customtkinter.CTkButton(app,text="reset",hover=True,command=start_timer,font=("small fonts", 16, "bold",), bg_color=GREEN, fg_color=PINK,)
-reset_button.configure(width=50, height=30,hover_color=(YELLOW),command=reset_timer )
-reset_button.grid(column=3, row=3)
-
-# music label
-playlist_label = Label()
-playlist_label.config(text="Study Music", font=("small fonts", 20, "bold"), fg=PINK, bg=GREEN, highlightthickness=0, pady=20)
-playlist_label.grid(column=2, row=4)
-
-# music buttons
-music_button = customtkinter.CTkButton(app,text="Play playlist",hover=True,font=("small fonts", 16, "bold",), bg_color=GREEN, fg_color=PINK,)
-music_button.configure(width=30, height=30,hover_color=(YELLOW),command=Play)
-music_button.grid(column=1, row=5)
-
-music_button = customtkinter.CTkButton(app,text="Pause",hover=True,font=("small fonts", 16, "bold",), bg_color=GREEN, fg_color=PINK,)
-music_button.configure(width=30, height=30,hover_color=(YELLOW),command=Pause)
-music_button.grid(column=2, row=5)
-
-pause_button = customtkinter.CTkButton(app,text="Resume",hover=True,font=("small fonts", 16, "bold",), bg_color=GREEN, fg_color=PINK,)
-pause_button.configure(width=30, height=30,hover_color=(YELLOW),command=Resume)
-pause_button.grid(column=3, row=5)
+    
 
 
 
 
 
-app.mainloop()
+
+
+
+
+# button images
+play_img = ctk.CTkImage(light_image=Image.open("imgs/play_img.png"), dark_image=Image.open("imgs/play_img.png"), size=(30,30))
+pause_img = ctk.CTkImage(light_image=Image.open("imgs/pause_img.png"), dark_image=Image.open("imgs/pause_img.png"), size=(30,30))
+resume_img = ctk.CTkImage(light_image=Image.open("imgs/resume_img.png"), dark_image=Image.open("imgs/resume_img.png"), size=(27,27))
+
+start_img = ctk.CTkImage(light_image=Image.open("imgs/start_img.png"), dark_image=Image.open("imgs/start_img.png"), size=(50,50))
+reset_img = ctk.CTkImage(light_image=Image.open("imgs/reset_img.png"), dark_image=Image.open("imgs/reset_img.png"), size=(50,50))
+
+
+
+
+# buttons
+
+start_button = ctk.CTkButton(pomodoro, text="", command=None, font=(FONT, SMALL_FONT_SIZE), bg_color=COLORS["green"], fg_color=COLORS["green"], image=start_img)
+start_button.configure(width=60, height=35, hover_color=COLORS["pink"]["hover"], command=start_timer)
+start_button.grid(column=1, row=2)
+
+reset_button = ctk.CTkButton(pomodoro, text="", command=None, font=(FONT, SMALL_FONT_SIZE), bg_color=COLORS["green"], fg_color=COLORS['green'], image=reset_img)
+reset_button.configure(width=60, height=35, hover_color=COLORS["pink"]["hover"], command=reset_timer)
+reset_button.grid(column=3, row=2)
+
+
+# button images
+play_img = ctk.CTkImage(light_image=Image.open("imgs/play_img.png"), dark_image=Image.open("imgs/play_img.png"), size=(30,30))
+pause_img = ctk.CTkImage(light_image=Image.open("imgs/pause_img.png"), dark_image=Image.open("imgs/pause_img.png"), size=(30,30))
+resume_img = ctk.CTkImage(light_image=Image.open("imgs/resume_img.png"), dark_image=Image.open("imgs/resume_img.png"), size=(27,27))
+
+
+
+
+
+
+# playlists buttons
+play_button = ctk.CTkButton(pomodoro, text="", command=None, font=(FONT, SMALL_FONT_SIZE), bg_color=COLORS["green"], fg_color=COLORS["green"], image=play_img)
+play_button.configure(width=80, height=35, hover_color=COLORS["pink"]["hover"], command=Play)
+play_button.grid(column=1, row=4)
+
+
+pause_button = ctk.CTkButton(pomodoro, text="", command=None, font=(FONT, SMALL_FONT_SIZE), bg_color=COLORS["green"], fg_color=COLORS["green"], image=pause_img)
+pause_button.configure(width=60, height=35, hover_color=COLORS["pink"]["hover"], command=Pause)
+pause_button.grid(column=2, row=4)
+
+
+
+resume_button = ctk.CTkButton(pomodoro,  text="",command=None, font=(FONT, SMALL_FONT_SIZE), bg_color=COLORS["green"], fg_color=COLORS["green"],image= resume_img )
+resume_button.configure(width=60, height=35, hover_color=COLORS["pink"]["hover"], command=Resume)
+resume_button.grid(column=3, row=4)
+
+
+
+
+
+
+
+
+
+
+if __name__ == "__main__":
+   pomodoro = pomodoro
+   pomodoro.mainloop()
+    
