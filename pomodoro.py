@@ -16,7 +16,7 @@ pygame.mixer.init()
 pomodoro.iconbitmap("imgs/tomato_icon.ico")
 pomodoro.resizable(False, False)
 pomodoro.title("")
-pomodoro.config(padx=200, pady=224, bg=COLORS["green"])
+pomodoro.config(padx=150, pady=150, bg=COLORS["green"])
 
 # timer variables
 reps = 0
