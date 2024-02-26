@@ -13,9 +13,6 @@ except:
     pass
 
 
- 
-
-
 
 # window setup
 pomodoro = ctk.CTk()
@@ -48,7 +45,7 @@ timer = None
 
 circle_img = PhotoImage(file="imgs/circle.png")
 
-# create pomodoro img in the middle of window
+# create circle image in the middle of window
 canvas = Canvas(width=300, height=300, bg=colors["dark"], highlightthickness=0)
 canvas.create_image(150, 150, image=circle_img)
 timer_text = canvas.create_text(150, 150, text="00:00", fill=WHITE, font=(FONT, SMALL_FONT_SIZE,))
@@ -65,8 +62,6 @@ playlist_label.grid(column=2, row=3,)
 
 checkmark_label = ctk.CTkLabel(pomodoro,text="", font=(FONT, 19,), text_color=WHITE, bg_color=colors["dark"])
 checkmark_label.grid(column=2, row=2,)
-
-
 
 
 PLAYLISTS = ["music/playlist_1.mp3", "music/playlist_2.mp3", "music/playlist_3.mp3",
@@ -98,6 +93,7 @@ def Resume():
 
 def reset_timer():
     start_button.configure(state="normal")
+    change_time_button.configure(state="normal")
     pomodoro.after_cancel(timer)
     canvas.itemconfig(timer_text, text="00:00")
     timer_label.configure(text="Timer")
@@ -106,15 +102,15 @@ def reset_timer():
     reps = 0
 
 
-
-
 def start_timer():
+   "start the timer countdown based on timer settings"
    global reps
    reps += 1
-   work_sec = WORK_MIN * 60
-   short_break_sec = SHORT_BREAK_MIN * 60
-   long_break_sec = LONG_BREAK_MIN * 60
+   work_sec = work_min * 60
+   short_break_sec = short_break_min * 60
+   long_break_sec = long_break_min * 60
    start_button.configure(state="disabled")
+   change_time_button.configure(state="disabled")
 
    if reps % 8 == 0:
        countdown(long_break_sec)
@@ -135,15 +131,85 @@ def start_timer():
        countdown(work_sec)
        timer_label.configure(text="Work", text_color=WHITE)
 
-   
-    
-   
+
+
+
+
+def change_time():
+    """function that deals with the channging of the timer based on what is chosen in combo box, default time is 1 minute"""
+    global reps
+    time_settings = {
+        "10min":10,
+        "25min": 25,
+        "40min": 40,
+        "50min": 50,
+        "90min": 90,
+    }
+    reps += 1
+    short_break_sec = short_break_min * 60
+    long_break_sec = long_break_min * 60
+    start_button.configure(state="disabled")
+
+    def start_timer_on_selection():
+        """function to deal with the selection of custom time per session"""
+        selected_option = combo_box.get()
+        if selected_option in time_settings:
+            work_sec = time_settings[selected_option] * 60
+            countdown(work_sec)
+            timer_label.configure(text="Work", text_color=WHITE)
+            NewWindow.destroy()
+            change_time_button.configure(state="disabled")
+
+        
+
+    if reps % 8 == 0:
+        countdown(long_break_sec)
+        timer_label.configure(text="Long Break", text_color=WHITE)
+        pygame.mixer.music.load(break_music)
+        pygame.mixer.music.play()
+        pygame.mixer.music.set_volume(0.09)
+    elif reps % 2 == 0:
+        countdown(short_break_sec)
+        timer_label.configure(text="Short Break", text_color=WHITE)
+        pygame.mixer.music.load(break_music)
+        pygame.mixer.music.play()
+        pygame.mixer.music.set_volume(0.09)
+    else:
+        try:
+
+            HWND = windll.user32.GetParent(pomodoro.winfo_id())
+            title_bar_color = 0x2D2D2D
+            windll.dwmapi.DwmSetWindowAttribute(HWND,35, byref(c_int(title_bar_color)), sizeof(c_int))
+
+        except:
+         pass
+        change_time_button.configure(state="disabled")
+        NewWindow = Toplevel(pomodoro, background=colors["dark"])
+        NewWindow.title("Time Settings")
+        NewWindow.config(padx=180, pady=150)
+        NewWindow.iconbitmap("imgs/window-icon.ico")
+        NewWindow.resizable(False, False)
+        NewWindow.title("Timer Config")
+
+        combo_box = ctk.CTkComboBox(NewWindow, values=list(time_settings.keys()))
+        combo_box.configure(fg_color=colors["dark"], corner_radius= 15,)
+        combo_box.grid(column=0, row=0)
+
+        time_button = ctk.CTkButton(NewWindow, text="Start Timer", command=start_timer_on_selection)
+        time_button.configure(bg_color=colors["dark"], fg_color=colors["hover"], hover_color=colors["hover"])
+        time_button.grid(column=0, row=2, pady=20)
+
+
+
+     
+
+
 def countdown(count):
-    #    for couting the min, use math.floor to round down instead of up
+    # for couting the min, use math.floor to round down instead of up
     count_min = math.floor(count / 60)
-#    give the remainder, which becomes the seconds.
+    #give the remainder, which becomes the seconds.
     count_sec = count % 60
-#    for the 0 to appear in front of number when it hits single digits and in the beginning
+    #for the 0 to appear in front of number when it hits single digits and in the beginning
     if count_sec < 10:
         count_sec = f"0{count_sec}"
 
@@ -156,13 +222,13 @@ def countdown(count):
     
     else:
         start_timer()
-#   everytime a work session is done, a circle will appear.
+        #everytime a work session is done, a circle will appear to mark completion of 1 session.
         marks = ""
         
         work_sessions = math.floor(reps/2)
         for _ in range(work_sessions):
             marks +=  "⚪"
-        checkmark_label.configure(text=marks, )
+        checkmark_label.configure(text=marks,)
 
        
     
@@ -180,6 +246,7 @@ play_img = ctk.CTkImage(light_image=Image.open("imgs/next.png"), dark_image=Imag
 pause_img = ctk.CTkImage(light_image=Image.open("imgs/pause.png"), dark_image=Image.open("imgs/pause.png"), size=(30,30))
 resume_img = ctk.CTkImage(light_image=Image.open("imgs/play.png"), dark_image=Image.open("imgs/play.png"), size=(30,30))
 theme_img = ctk.CTkImage(light_image=Image.open("imgs/change-theme.png"), dark_image=Image.open("imgs/change-theme.png"), size=(30,30))
+change_time_img = ctk.CTkImage(light_image=Image.open("imgs/change-time.png"), dark_image=Image.open("imgs/change-time.png"), size=(30,30))
 
 
 
@@ -230,13 +297,14 @@ def change_theme():
     pause_button.configure(bg_color=colors["dark"], fg_color=colors["dark"], hover_color=colors["hover"])
     resume_button.configure(bg_color=colors["dark"], fg_color=colors["dark"], hover_color=colors["hover"])
     theme_button.configure(bg_color=colors["dark"], fg_color=colors["dark"], hover_color=colors["hover"])
+    change_time_button.configure(bg_color=colors["dark"], fg_color=colors["dark"],hover_color=colors["hover"])
     playlist_label.configure(bg_color=colors["dark"], fg_color=colors["dark"])
     timer_label.configure(bg_color=colors["dark"], fg_color=colors["dark"])
     checkmark_label.configure(bg_color=colors["dark"])
     canvas.configure(bg=colors["dark"], highlightthickness=0)
 
 
-# playlists buttons
+#playlists buttons
 play_button = ctk.CTkButton(pomodoro, text="", command=None, font=(
     FONT, SMALL_FONT_SIZE), bg_color=colors["dark"], fg_color=colors["dark"], image=play_img)
 play_button.configure(width=80, height=35,
@@ -268,11 +336,15 @@ theme_button = ctk.CTkButton(pomodoro, text="", command=None, font=(
 theme_button.configure(command=change_theme)
 theme_button.grid(column=3, row=0)
 
+change_time_button = ctk.CTkButton(pomodoro, text="", command=None, font=(
+    FONT, SMALL_FONT_SIZE), bg_color=colors["dark"], fg_color=colors["dark"], hover_color=colors["hover"] , image=change_time_img)
+change_time_button.configure(command=change_time)
+change_time_button.grid(column=3, row=1)
+
 
 
 
 if __name__ == "__main__":
-   pomodoro = pomodoro
    pomodoro.mainloop()
    
     

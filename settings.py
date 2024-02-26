@@ -1,4 +1,4 @@
-
+from tkinter import Toplevel,Label
 # colors
 WHITE = "#EEEEEE"
 colors = {
@@ -22,8 +22,18 @@ PLAYLISTS = ["music/playlist_1.mp3", "music/playlist_2.mp3","music/playlist_3.mp
 
 
 # timer settings
-WORK_MIN = 1
-SHORT_BREAK_MIN = 1
-LONG_BREAK_MIN = 1
+work_min = 1
+short_break_min = 5
+long_break_min = 15
+
+
+class NewWindow(Toplevel):
+  def __init__(self, master = None):
+    super().__init__(master = master)
+    self.title("New Window")
+    self.geometry("400x400")
+    label = Label(self, text ="This is a new Window")
+    label.pack()
+
 
 
