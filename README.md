@@ -4,7 +4,8 @@ It is a GUI App that uses the pomodoro technique to help study or read, I have s
 There is also a checkmark that will tell the user how many sessions they have done, which might incourage them to keep on studying or working on whatever they are doing.
 
 p.s :
-I know it is not perfect,if you see something that you think I can improve on, please don't hesitate to tell me, because "I am still learning the craft".
+I know it is not perfect,if you see something that you think I can improve on, please don't hesitate to tell me, because "I am still learning". 
+if the  code does not work, delete functions related to music and all its buttons.
 
 
 ## Libraries and images credit
