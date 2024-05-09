@@ -1,12 +1,13 @@
-# Pomodoro
-It is a GUI App that uses the pomodoro technique to help study or read, I have set the default time to 50 mins, because I think to get "deep work" done you need approximately that amount of time.
-studying for 25 mins and a taking a lot  of breaks can become quite distracting, After using this app myself I think it is worth using; because there is also white noise,lofi and jazz selections from the app(limited to 6 playlists).
-There is also a checkmark that will tell the user how many sessions they have done, which might encourage them to keep on studying or working on whatever they are doing.
+# Pomodoro Technique GUI App
+This GUI application implements the Pomodoro technique, a time management method aimed at boosting productivity. By default, the timer is set to 50 minutes, as I  believe that such a duration is adequate in order to achieving a state of "deep work."
 
-p.s :
-I know it is not perfect,if you see something that you think I can improve on, please don't hesitate to tell me.
-if the  code does not work, delete functions related to music and all its buttons.
+The app encourages focused work by deviating from the common practice of short study periods and frequent breaks, which can lead to distractions. Through personal experience, I've found this approach effective.
+In addition to the timer, the app offers a selection of nature sounds, lofi, and jazz playlists, limited to 6 options. These ambient sounds can enhance concentration and create a conducive environment for studying or working.
 
+Additionally, the app includes a checkmark feature that tracks completed sessions, providing users with a sense of accomplishment and motivation to continue their tasks.
+Please note that while the app isn't flawless, any suggestions for improvement are welcome. If you encounter any issues, consider removing music-related functions and buttons from the code otherwise download the packaged app.
+
+P.S: will add time selection feature soon.
 
 ## Libraries and images credit
 * [Customtkinter](https://customtkinter.tomschimansky.com/) - Modern version of tkinter with more customization but also inherits main functions from tkinter.
