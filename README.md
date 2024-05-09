@@ -27,7 +27,6 @@ $PROJECT_ROOT
 ```
 
 ## Video for how it works
-https://github.com/kwame-Owusu/Pomodoro/assets/98961379/2684431c-910c-4088-b8e3-38cf1c086fda
-
+https://github.com/kwame-Owusu/Pomodoro/assets/98961379/1d0d934e-4d0c-4ea2-b952-4907597a3bcb
 
 
