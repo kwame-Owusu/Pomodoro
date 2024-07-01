@@ -153,7 +153,7 @@ def countdown(count):
     
     if count > 0:
         global timer
-        timer = pomodoro.after(1000, countdown, count - 1)
+        timer = pomodoro.after(100, countdown, count - 1)
        
     
     else:
